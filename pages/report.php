@@ -22,6 +22,7 @@ foreach ($timerows as $row) {
     if (!isset($projects[$id]['categories'][$cid])) {
         $projects[$id]['categories'][$cid] = [
             'name' => $row['category_name'],
+            'notes' => (int) $row['used_notes'],
             'tickets' => (int) $row['used_tickets'],
             'time' => (int) $row['used_time'],
         ];
@@ -47,6 +48,7 @@ html_page_top();
                     <th>Catégorie</th>
                     <th>Temps consacré</th>
                     <th>#tickets</th>
+                    <th>#notes</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +58,7 @@ html_page_top();
                     echo "<td>" . htmlspecialchars($row['name']) . "</td>";
                     echo "<td>" . db_minutes_to_hhmm($row['time']) . "</td>";
                     echo "<td>" . $row['tickets'] . "</td>";
+                    echo "<td>" . $row['notes'] . "</td>";
                     echo "</tr>\n";
                 }
                 ?>
@@ -68,54 +71,3 @@ html_page_top();
         Les durées sont exprimées sous la forme <em>hh:mm</em> (heures et minutes).
     </p>
 </div>
-
-<?php
-if (isset($info['description'])) {
-    echo "<h2>Détails</h2>";
-    echo '<div id="project-info">'
-    . nl2br($info['description']) // no filter, but on purpose!
-    . "</div>\n";
-}
-?>
-
-<?php
-if (isset($info['id']) && timeaccount\canCreditTime($info['id'])) {
-    $credit = ($info['timecredit'] ? db_minutes_to_hhmm($info['timecredit']) : '');
-    ?>
-    <h2>Administation du crédit de temps</h2>
-    <div class="form-container">
-        <form method="post" action="<?= plugin_page('update-project') ?>">
-            <fieldset>
-                <legend><?= htmlspecialchars($info['name']) ?></legend>
-
-                <input type="hidden" name="project_id" value="<?= $info['id'] ?>" />
-
-                <div class="field-container">
-                    <label><span>Crédit de temps</span></label>
-                    <span class="input">
-                        <input type="text" name="timecredit" value="<?= $credit ?>" />
-                        (hh:mm ou hh.h)
-                    </span>
-                    <span class="label-style"></span>
-                </div>
-
-                <div class="field-container">
-                    <label><span>Commentaire public</span><br />(HTML brut + nl2br)</label>
-                    <span class="input">
-                        <textarea cols="74" rows="12" name="description"><?= htmlspecialchars($info['description']) ?></textarea>
-                    </span>
-                    <span class="label-style"></span>
-                </div>
-
-                <span class="submit-button">
-                    <button type="submit" class="button">Enregistrer</button>
-                </span>
-            </fieldset>
-        </form>
-    </div>
-    <?php
-}
-?>
-
-<?php
-html_page_bottom();
