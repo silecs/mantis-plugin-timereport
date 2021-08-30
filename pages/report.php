@@ -20,8 +20,13 @@ foreach ($timerows as $row) {
     }
     $cid = (int) $row['category_id'];
     if (!isset($projects[$id]['categories'][$cid])) {
+        if ($cid > 0) {
+            $name = $row['category_name'];
+        } else {
+            $name = "-";
+        }
         $projects[$id]['categories'][$cid] = [
-            'name' => $row['category_name'],
+            'name' => $name,
             'notes' => (int) $row['used_notes'],
             'tickets' => (int) $row['used_tickets'],
             'time' => (int) $row['used_time'],
@@ -29,11 +34,15 @@ foreach ($timerows as $row) {
     }
 }
 
-html_page_top();
+layout_page_header("Rapport d'utilisation du temps");
+layout_page_begin();
+
+$filter = summary_get_filter();
+print_summary_menu('TimeReporting/report', $filter);
 ?>
 
 <h1>
-    Rapport d'utilisation du temps
+    Rapport du temps consommé
 </h1>
 
 <div id="time-per-project" class="summary-container">
@@ -41,27 +50,37 @@ html_page_top();
     <?php
     foreach ($projects as $pid => $project) {
         echo "<h3>" . htmlspecialchars($project['name']) . "</h3>\n";
+        $total = [0, 0, 0];
         ?>
-        <table>
+        <table class="table table-bordered table-condensed table-hover table-striped" style="max-width: 70em">
             <thead>
                 <tr class="row-category">
                     <th>Catégorie</th>
-                    <th>Temps consacré</th>
-                    <th>#tickets</th>
-                    <th>#notes</th>
+                    <th class="align-right">Temps consacré</th>
+                    <th class="align-right">#tickets</th>
+                    <th class="align-right">#notes</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 foreach ($project['categories'] as $row) {
+                    $total[0] += $row['time'];
+                    $total[1] += $row['tickets'];
+                    $total[2] += $row['notes'];
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                    echo "<td>" . db_minutes_to_hhmm($row['time']) . "</td>";
-                    echo "<td>" . $row['tickets'] . "</td>";
-                    echo "<td>" . $row['notes'] . "</td>";
+                    echo '<td class="column-num">' . db_minutes_to_hhmm($row['time']) . "</td>";
+                    echo '<td class="column-num">' . $row['tickets'] . "</td>";
+                    echo '<td class="column-num">' . $row['notes'] . "</td>";
                     echo "</tr>\n";
                 }
                 ?>
+                <tr>
+                    <th>Total</th>
+                    <td class="column-num"><?= db_minutes_to_hhmm($total[0]) ?></td>
+                    <td class="column-num"><?= $total[1] ?></td>
+                    <td class="column-num"><?= $total[2] ?></td>
+                </tr>
             </tbody>
         </table>
     <?php
@@ -71,3 +90,6 @@ html_page_top();
         Les durées sont exprimées sous la forme <em>hh:mm</em> (heures et minutes).
     </p>
 </div>
+
+<?php
+layout_page_end();

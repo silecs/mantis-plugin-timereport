@@ -16,12 +16,12 @@ class TimeReportingPlugin extends MantisPlugin
     function register()
     {
         $this->name = 'Time Reporting';
-        $this->description = "Plugin that display reports about the used time.";
+        $this->description = "Plugin that displays reports about the used time.";
         $this->page = 'report';
 
-        $this->version = '1.0';
+        $this->version = '2.0';
         $this->requires = [
-            'MantisCore' => '1.3.0, < 2.0',
+            'MantisCore' => '2.0.0',
         ];
 
         $this->author = 'François Gannaz / Silecs';
@@ -37,6 +37,7 @@ class TimeReportingPlugin extends MantisPlugin
     public function hooks()
     {
         return [
+            'EVENT_LAYOUT_RESOURCES' => 'addHtmlHeadContent',
             'EVENT_MENU_SUMMARY' => 'onMenuSummary',
         ];
     }
@@ -46,10 +47,23 @@ class TimeReportingPlugin extends MantisPlugin
      *
      * @return array
      */
-    public function onMenuSummary()
+    public function onMenuSummary(): array
     {
         return [
-            '<a href="' . plugin_page('report') . '">Tableaux du temps passé</a>',
+            '<a href="' . plugin_page('report') . '">Tableaux du temps</a>',
         ];
+    }
+
+    function addHtmlHeadContent(): string
+    {
+        return <<<EOHTML
+<style>
+    .column-num {
+        font-family: monospace;
+        text-align: right;
+    }
+</style>
+EOHTML
+        ;
     }
 }
