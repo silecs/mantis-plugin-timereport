@@ -8,7 +8,16 @@ require_once dirname(__DIR__) . '/includes/lib.php';
 access_ensure_project_level(config_get('view_summary_threshold'));
 
 $projectId = helper_get_current_project();
-$timerows = \timereporting\readCategoriesTime($projectId);
+$after = $_GET['after'] ?? $_GET['start'] ?? '';
+if (!preg_match('/^\d{4}-\d\d-\d\d$/', $after)) {
+	$after = '';
+}
+$before = $_GET['before'] ?? $_GET['end'] ?? '';
+if (!preg_match('/^\d{4}-\d\d-\d\d$/', $before)) {
+	$before = '';
+}
+$timerows = \timereporting\readCategoriesTime($projectId, $after, $before);
+
 $projects = [];
 foreach ($timerows as $row) {
     $id = (int) $row['id'];
