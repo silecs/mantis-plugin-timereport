@@ -98,6 +98,28 @@ print_summary_menu('TimeReporting/report', $filter);
     <p>
         Les durées sont exprimées sous la forme <em>hh:mm</em> (heures et minutes).
     </p>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Limiter ce tableau à une période (limites incluses)
+        </div>
+        <div class="panel-body">
+            <form method="GET" class="form-horizontal">
+                <input type="hidden" name="page" value="TimeReporting/report" />
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="after">À partir de</label>
+                    <div class="col-sm-10"><input type="date" name="after" value="<?= $after ?>" class="form-control" /></div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="before">Jusqu'à</label>
+                    <div class="col-sm-10"><input type="date" name="before" value="<?= $before ?>" class="form-control" /></div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10"><button type="submit" class="btn btn-primary">Afficher</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <?php
