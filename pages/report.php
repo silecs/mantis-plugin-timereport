@@ -77,7 +77,7 @@ print_summary_menu('TimeReporting/report', $filter);
 </div>
 
 <div id="time-per-user" class="summary-container">
-    <h2>Temps par développeur</h2>
+    <h2>Temps par utilisateur</h2>
     <?php
     $projectsUsers = \timereporting\getProjectTimeByUser($projectId, $after, $before);
     foreach ($projectsUsers as $pid => $project) {
@@ -100,7 +100,12 @@ print_summary_menu('TimeReporting/report', $filter);
                     $total[1] += $row['tickets'];
                     $total[2] += $row['notes'];
                     echo "<tr>";
-                    echo "<td>" . htmlspecialchars($row['name']) . "</td>";
+                    if ($row['time'] > 0) {
+                        $uname = "<strong>" . htmlspecialchars($row['name']) . "</strong>";
+                    } else {
+                        $uname = htmlspecialchars($row['name']);
+                    }
+                    echo "<td>{$uname}</td>";
                     echo '<td class="column-num">' . db_minutes_to_hhmm($row['time']) . "</td>";
                     echo '<td class="column-num">' . $row['tickets'] . "</td>";
                     echo '<td class="column-num">' . $row['notes'] . "</td>";
